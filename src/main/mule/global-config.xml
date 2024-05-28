@@ -17,7 +17,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		</http:listener-connection>
     </http:listener-config>
 	<configuration-properties doc:name="Configuration properties" doc:id="7dfe2811-9b9d-4705-8d99-7a18661ec4aa" file="config/${env}-config.yaml" />
-	<!-- <api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="ef1ced67-b7e4-4825-ae64-87012d4805b5" flowRef="salesforce-s-api-main" /> -->
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="ef1ced67-b7e4-4825-ae64-87012d4805b5" flowRef="salesforce-s-api-main" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="761e72aa-dadb-4c16-aa89-176a918ee46e" file="config/${env}-config.yaml" key="${mule.key}" />
 	<configuration doc:name="Configuration" doc:id="4cc594aa-8c82-445d-8251-c7ce0d4c6650" defaultErrorHandler-ref="global-error-handler" />
 	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="67eee81d-13ee-4982-acbe-4a7c566624ba" >

@@ -132,7 +132,7 @@ payload map(item,index)->{
 		</ee:transform>
 		<until-successful maxRetries="${max.retry}" doc:name="Until Successful" doc:id="91f40689-fb1e-4e5e-9985-76520a462dcf" millisBetweenRetries="${max.time}">
 			<salesforce:query doc:name="Query" doc:id="70c1e992-25f1-4897-a9d0-fb17e9a44679" config-ref="Salesforce_Config">
-			<salesforce:salesforce-query><![CDATA[SELECT Id,Name FROM Product2 WHERE productId__c =':productId']]></salesforce:salesforce-query>
+			<salesforce:salesforce-query><![CDATA[SELECT Id,Name,ProductCode FROM Product2 WHERE productId__c =':productId']]></salesforce:salesforce-query>
 			<salesforce:parameters><![CDATA[#[output application/java
 ---
 {
@@ -150,9 +150,9 @@ payload map(item,index)->{
 "ID": item.Id,
 "Name" : vars.updatePayload.Name,
 "Description": vars.updatePayload.Description,
-"ProductCode" : vars.updatePayload.ProductCode,
-"ProductPrice" : vars.updatePayload.ProductPrice__c,
-"CurrencyCode": vars.updatePayload.CurrencyCode__c,
+"ProductCode" : item.ProductCode,
+"ProductPrice" : vars.updatePayload.ProductPrice,
+"CurrencyCode": vars.updatePayload.CurrencyCode,
 
 }]]></ee:set-payload>
 			</ee:message>
