@@ -1,0 +1,18 @@
+#%RAML 1.0 Trait
+headers:
+  client-id:
+    description: |
+      A client-id is provided with access to an API and specifically approved environments.
+      API Access is requested by the client from within the Exchange. 
+      SLAs and client management is maintained via the API Manager.
+    type: string
+    required: true
+    example: d39bd98b8ef84ccd85311ecbc2f4e9fd
+
+  client-secret:
+    description: |
+      A client-secret provides an additional layer of security to the request.
+    type: string
+    required: true
+    example: d39bd98b8ef84ccd85311ecbc2f4e9fd
+    

@@ -1,0 +1,110 @@
+#%RAML 1.0
+title: salesforce-s-api
+
+description: |-
+    This is a RAML for salesforce-s-api.
+
+    **Published History:**
+    
+    | Asset Version | Published By  | Date / Time | Remarks |
+    |:-------------:| ------------- | ----------- | ------- |
+    | **1.0.0**     | Abhishek Dubey | 2024-05-22 |         |
+ 
+version: v1.0
+mediaType: application/json
+protocols:
+  - HTTPS
+
+types:
+ products: !include dataTypes/getProducts.raml
+
+traits:
+  clientIdRequired: !include /traits/clientid.raml
+  transaction-id: !include /traits/transaction-id.raml
+  authorization: !include /traits/authorization.raml
+
+
+/healthcheck:
+  get:
+    description: Health Check endpoint to check the connectivity
+    displayName: Get Status
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              !include /examples/status.json
+
+/getProducts:
+    get:
+      displayName: Get all the product inventory details
+      description: This will fetch all the product records
+      is: [clientIdRequired,transaction-id]
+      queryParameters:
+        productId:
+          type: string
+          required: false
+          description: input param to delete the product records.
+          example: "P00000000001"
+          maxLength: 12  
+      responses:
+        200:
+          body:
+            application/json:
+              type: products
+              example: !include /examples/getProductInventory.json
+/createProducts:
+    post:
+      displayName: Create the new product details
+      description: Create the product records
+      is: [clientIdRequired,transaction-id]
+      body:
+        application/json:
+          type: products
+          example:  !include  /examples/getProductInventory.json
+      responses:
+        201:
+          body:
+            application/json:
+              example: !include /examples/createResponse.json
+
+
+/updateProducts:
+    put:
+      displayName: Update the records using ProductId 
+      description: This will update the product records 
+      is: [clientIdRequired,transaction-id]
+      queryParameters:
+        productId:
+          type: string
+          required: false
+          description: input param to update the product record.
+          example: "P00000000001"
+          maxLength: 12
+      body:
+        application/json:
+          type: products
+          example: !include /examples/getProductInventory.json   
+      responses:
+        201:
+          body:
+            application/json:
+              example: !include /examples/updateResponse.json
+
+/deleteProducts:
+    delete:
+      displayName: Delete the record based on ProductID 
+      description: This will use to delete the product records.
+      is: [clientIdRequired,transaction-id]
+      queryParameters:
+        productId:
+          type: string
+          required: false
+          description: input param to delete the product records.
+          example: "P00000000001"
+          maxLength: 12
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include /examples/deleteResponse.json

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="global-error-handler" doc:id="c39d56c2-4fc9-4388-bc07-225a65dbe6a5" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="21a21ee2-4788-494c-98b1-59b793b84a8f" type="HTTP:UNAUTHORIZED">
+			<set-variable value="401" doc:name="Set httpStatus" doc:id="0de1b3f8-25af-4a98-98cd-0490d8e98747" variableName="httpStatus"/>
+			<ee:transform doc:name="Transform Message" doc:id="f631be5b-6ca5-4370-963d-54d6ac790af4" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.flowname,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: 401,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: vars.httpStatus,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="373b4a30-fbf6-473e-bf9e-dc5f6670c129" type="HTTP:BAD_REQUEST">
+			<set-variable value="400" doc:name="Set httpStatus" doc:id="bbd56c58-188e-48a3-9a69-516eb63765a0" variableName="httpStatus" />
+			<ee:transform doc:name="Error Transform" doc:id="66ac1b81-824a-49c8-be84-5857e7cd4c46" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.flowname,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: 400,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: vars.httpStatus,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="697f14cc-f416-40ed-8cc6-eea96a5a986a" type="HTTP:RETRY_EXHAUSTED">
+			<set-variable value="400" doc:name="Set httpStatus" doc:id="5d291453-5b03-4e4e-ba21-592e7ff06ee3" variableName="httpStatus" />
+			<ee:transform doc:name="Error Transform" doc:id="00c6332b-9370-437b-8ccf-0cbbf8108a1b">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.flowname,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: 400,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: vars.httpStatus,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0487328b-e447-46c6-8bd0-1018c9e4d17e" type="HTTP:CONNECTIVITY">
+			<set-variable value="500" doc:name="httpStatus" doc:id="9095fe34-e6ad-44ae-a633-f0dcb3600f29" variableName="httpStatus" />
+			<ee:transform doc:name="Error Transform" doc:id="541be609-d64d-4316-80a8-0e6eac03a932">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.flowname,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: 500,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: vars.httpStatus,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="34235b61-bbe3-4e8b-b3b2-5740e1e3b6d3" type="HTTP:TIMEOUT">
+			<set-variable value="500" doc:name="Set httpStatus" doc:id="ed170ae9-de55-4ecf-a3f0-cbe12ebd86ba" variableName="httpStatus" />
+			<ee:transform doc:name="Error Transform" doc:id="f3f94956-3c4f-44f0-bc13-1473ec6195be" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.flowname,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: 500,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: 500,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<!-- <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2064c912-3716-416e-94c4-6c5c281ad6fa" type="DB:QUERY_EXECUTION">
+			<set-variable value="500" doc:name="Set httpStatus" doc:id="c46c16ed-5310-4663-9c47-2b8f82b7c2a5" variableName="httpStatus" />
+			<ee:transform doc:name="Error Transform" doc:id="41c40c03-6564-405f-929b-5f74d377d849" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{
+	application: vars.flowname,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: 500,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: vars.httpStatus,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate> -->
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d8077b13-e3e1-4d6a-979b-37b596984fb9" type="ANY">
+			<set-variable value="#[error.muleMessage.attributes.statusCode]" doc:name="Set httpStatus" doc:id="b447a1dc-90fe-4da1-8aa0-dec024fa3516" variableName="httpStatus" />
+			<ee:transform doc:name="Error Transform" doc:id="75dfbe9c-ce88-49b8-8db9-f28984a16a73" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.interfaceName,
+	flowName: vars.flowName,
+	exceptionDetails: {
+		description: error.description,
+		exceptionCode: if(error.muleMessage != null and error.muleMessage.attributes != null) error.muleMessage.attributes.statusCode else 500,
+		exceptionMessage: if(error.muleMessage != null) error.muleMessage.payload else null,
+		exceptionTimestamp: now()
+	},
+	httpStatusCode: if(error.muleMessage != null and error.muleMessage.attributes != null) error.muleMessage.attributes.statusCode else 500,
+	success: false,
+	transactionId: vars.correlationId,
+	transactionType: null
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

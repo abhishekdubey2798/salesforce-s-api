@@ -1,0 +1,10 @@
+[
+    {
+        "productId__c": "P00000000000",
+        "ProductCode": "HP0007",
+        "Name": "HP Laptop",
+        "ProductPrice__c": 200.00,
+        "CurrencyCode__c": "INR",
+        "Description": "HP Laptop 7th Gen"
+    }
+]

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="salesforce-s-api-config" api="salesforce-s-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="salesforce-s-api-main" doc:id="dfc5b01e-5234-43ae-8167-4b7dd25a24df">
+        <http:listener config-ref="httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Transform Message" doc:id="ba9cede6-e2f8-443b-aa3d-c9399fbc611d">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="queryParams"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <apikit:router config-ref="salesforce-s-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="salesforce-s-api-console">
+        <http:listener config-ref="httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="salesforce-s-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\healthcheck:salesforce-s-api-config">
+        <ee:transform doc:name="Transform Message" doc:id="b6d18072-fffe-4fc1-9580-38356499bc33">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="interfaceName"><![CDATA["salesforce-s-api"]]></ee:set-variable>
+                <ee:set-variable variableName="correlationId"><![CDATA[correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="flowname"><![CDATA["heath check flow"]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="health-check-Sub-Flow" doc:id="479ceee0-32c8-46ac-8c87-8d69119d2fe3" name="health-check-Sub-Flow" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="delete:\deleteProducts:salesforce-s-api-config">
+        <ee:transform doc:name="Transform Message" doc:id="e312b864-9801-41c8-a6ca-c5045dbd27ea">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="interfaceName"><![CDATA["salesforce-s-api"]]></ee:set-variable>
+                <ee:set-variable variableName="correlationId"><![CDATA[correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="flowname"><![CDATA["delete product flow"]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="delete-products-Sub-Flow" doc:id="79679fb8-b536-4997-b888-4c2b2c70c22a" name="delete-products-Sub-Flow" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="get:\getProducts:salesforce-s-api-config" doc:id="652db0d8-68e1-4638-947c-8f45a6b19f99">
+        <ee:transform doc:name="Transform Message" doc:id="62e6b5f9-a6c9-4735-bab1-f4dff102a3bb">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="interfaceName"><![CDATA["salesforce-s-api"]]></ee:set-variable>
+                <ee:set-variable variableName="correlationId"><![CDATA[correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="flowname"><![CDATA["get all products"]]></ee:set-variable>
+				<ee:set-variable variableName="size" ><![CDATA[vars.queryParams.size]]></ee:set-variable>
+				<ee:set-variable variableName="page" ><![CDATA[vars.queryParams.page]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="get-products-Sub-Flow" doc:id="5da6e55b-e27a-4dba-a791-367b01624dba" name="get-products-Sub-Flow" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="put:\updateProducts:application\json:salesforce-s-api-config">
+        <ee:transform doc:name="Transform Message" doc:id="d5897cb3-b332-4703-9bf9-3caa1169b4fb">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="interfaceName"><![CDATA["salesforce-s-api"]]></ee:set-variable>
+                <ee:set-variable variableName="correlationId"><![CDATA[correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="flowname"><![CDATA["update products flow"]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="update-product-Sub-Flow" doc:id="4c99d4b2-7fa6-4cc3-b633-8993eee88148" name="update-product-Sub-Flow" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+    <flow name="post:\createProducts:application\json:salesforce-s-api-config">
+		<ee:transform doc:name="Transform Message" doc:id="88cb9021-95a2-4bf9-a995-034b06111908" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="correlationId" ><![CDATA[correlationId]]></ee:set-variable>
+				<ee:set-variable variableName="flowname" ><![CDATA["create all products"]]></ee:set-variable>
+				<ee:set-variable variableName="interfaceName" ><![CDATA["salesforce-s-api"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="create-product-Sub-Flow" doc:id="211aff80-91cd-4358-8a6d-170c0ac45cb5" name="create-product-Sub-Flow" />
+		<error-handler ref="global-error-handler" />
+    </flow>
+</mule>

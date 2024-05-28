@@ -1,0 +1,21 @@
+https:
+  host: "0.0.0.0"
+  port: "8082"
+  
+db:
+  url: "jdbc:sap://rdmhanadatamart.uk.deloitte.com:30041/?databaseName=RDM"
+  driver: "com.sap.db.jdbc.Driver"
+  username: "SRVUSR_UPDATE_MULESOFT"
+  password: "![uEDqJCU0FgnPYDyIDARmNw==]"
+
+keystore:
+  path: "nse_mulesoft.p12"
+  password: "![bdinn+kkuGO94OB8Rc/i0w==]"
+  
+
+api:
+  id: "18138753"
+  
+max:
+  retry: "3"
+  time: "30000"

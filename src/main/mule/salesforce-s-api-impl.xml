@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="get-products-Sub-Flow" doc:id="23eea047-6a62-4e7f-8416-8bbfa1a46c6f" >
+		<logger level="INFO" doc:name="get products flow starts" doc:id="0c4d791f-a3d8-4924-a257-c0bc654fd469" message="get products flow starts" />
+		<choice doc:name="Choice" doc:id="ef406ae6-19ab-488a-9621-4456a7c9cb65" >
+			<when expression="#[vars.queryParams.page != null and vars.queryParams.size != null]">
+				<until-successful maxRetries="${max.retry}" doc:name="Until Successful" doc:id="92118f4b-7e4f-4539-8489-f868d67608d1" millisBetweenRetries="${max.time}" >
+					<salesforce:query doc:name="Query for fetching selected records" doc:id="e374534c-1fc2-41c3-9b2f-fbd4ce94be4b" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT CurrencyCode__c,Description,Id,Name,ProductCode,productId__c,ProductPrice__c FROM Product2 limit :size offset :page ]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	productId : attributes.queryParams.productId,
+	size : vars.size,
+	page : vars.page
+}]]]></salesforce:parameters>
+		</salesforce:query>
+				</until-successful>
+			</when>
+			<otherwise >
+				<until-successful maxRetries="${max.retry}" doc:name="Until Successful" doc:id="d1d29cac-0738-444b-9cbe-938851789162" millisBetweenRetries="${max.time}" >
+					<salesforce:query doc:name="Query for fetching all the records" doc:id="aad8abc4-82cb-417d-8d82-582be1b6c14f" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query><![CDATA[SELECT CurrencyCode__c,Description,Id,Name,ProductCode,productId__c,ProductPrice__c FROM Product2 ]]></salesforce:salesforce-query>
+				</salesforce:query>
+				</until-successful>
+			</otherwise>
+		</choice>
+		<choice doc:name="Choice" doc:id="9eb2328b-8676-4570-844b-a22d99ed8679" >
+			<when expression="#[payload == null or isEmpty(payload)]">
+				<ee:transform doc:name="Transform Message" doc:id="6415fa4b-3a99-4386-ae75-96750bf518f0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	application: vars.interfaceName,
+	message: "No records available for Products",
+	httpStatusCode: 500,
+	transactionId: vars.correlationId,
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="23ba3357-bec7-477b-a5a2-c37d22a28d4b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map(item,index)->{
+
+"ID": item.Id,
+"Name" : item.Name,	
+"ProductId" : item.productId__c,
+"ProductCode" : item.ProductCode,
+"ProductPrice" : item.ProductPrice__c,
+"CurrencyCode": item.CurrencyCode__c,
+"Description": item.Description,
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="get products flow ends" doc:id="737296b6-0659-4945-844b-736bf8a8fedc" message="get products flow ends"/>
+	</sub-flow>
+	<sub-flow name="delete-products-Sub-Flow" doc:id="dc6aae56-cf89-4bb9-9e7d-64f09ca52c98" >
+		<logger level="INFO" doc:name="delete flow starts" doc:id="e3b0c7d2-580b-4dc8-a788-1a1fc0bfacf6" message="delete flow starts" />
+		<until-successful maxRetries="${max.retry}" doc:name="Until Successful" doc:id="5c999ec9-544c-4fe0-9f7a-20bb6adc0f42" millisBetweenRetries="${max.time}">
+			<salesforce:query doc:id="aa9050ea-883b-49ac-933c-f4d08ad4a7d3" config-ref="Salesforce_Config" doc:name="Query">
+			<salesforce:salesforce-query><![CDATA[SELECT CurrencyCode__c,Description,Id,Name,ProductCode,productId__c,ProductPrice__c FROM Product2 WHERE productId__c =':productId']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	productId : attributes.queryParams.productId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="03c6cc73-b997-488b-9563-8abee244c9bd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(item,index)->{
+
+"ID": item.Id,
+"Name" : item.Name
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="${max.retry}" doc:name="Until Successful1" doc:id="91e55b2f-3c27-4142-a069-678eccb50f66" millisBetweenRetries="${max.time}" >
+			<salesforce:delete doc:id="2d5f4b01-3630-4027-83c3-0bf7553aff44" config-ref="Salesforce_Config" doc:name="Delete">
+			<salesforce:ids><![CDATA[#[payload.ID]]]></salesforce:ids>
+		</salesforce:delete>
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="49e79552-5ba2-4895-8223-048e8a9f0530" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="delete flow ends" doc:id="880cd527-15ef-4a62-8825-9228fca91715" message="delete flow ends"/>
+	</sub-flow>
+	<sub-flow name="update-product-Sub-Flow" doc:id="631f6cd1-7c01-4a85-a27b-dc44b350146a" >
+		<logger level="INFO" doc:name="update flow starts" doc:id="ea17e071-334c-4589-a18b-e4ff7db0895c" message="update flow starts"/>
+		<ee:transform doc:name="Transform Message" doc:id="16087fca-e658-4a32-a5a3-d0d607818994" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="updatePayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(item,index)->{
+
+"Id": item.ID,
+"Name" : item.Name,	
+"productId__c" : item.ProductId,
+"ProductCode" : item.ProductCode,
+"ProductPrice__c" : item.ProductPrice,
+"CurrencyCode__c": item.CurrencyCode,
+"Description": item.Description,
+
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<until-successful maxRetries="${max.retry}" doc:name="Until Successful" doc:id="91f40689-fb1e-4e5e-9985-76520a462dcf" millisBetweenRetries="${max.time}">
+			<salesforce:query doc:name="Query" doc:id="70c1e992-25f1-4897-a9d0-fb17e9a44679" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT Id,Name FROM Product2 WHERE productId__c =':productId']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	productId : attributes.queryParams.productId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="75866b97-e01d-4bc3-8dc1-8a78accecd03" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(item,index)->{
+
+"ID": item.Id,
+"Name" : vars.updatePayload.Name,
+"Description": vars.updatePayload.Description,
+"ProductCode" : vars.updatePayload.ProductCode,
+"ProductPrice" : vars.updatePayload.ProductPrice__c,
+"CurrencyCode": vars.updatePayload.CurrencyCode__c,
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="${max.retry}" doc:name="Until Successful1" doc:id="88378334-c4d9-4090-91a0-5d8bd12619b6" millisBetweenRetries="${max.time}" >
+			<salesforce:update type="Product2" doc:name="Update" doc:id="6182cf91-bc4f-4408-86d7-d52529bc43c9" config-ref="Salesforce_Config" />
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="b8e3c8d1-4ae6-41ac-907b-d3b5e8d5e367" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="update flow ends" doc:id="947480e4-f2a3-4eaf-aa5e-2f7d7949c8fe" message="update flow ends"/>
+	</sub-flow>
+	<sub-flow name="create-product-Sub-Flow" doc:id="e4353c94-3a64-4d65-a902-e4d267936077" >
+		<logger level="INFO" doc:name="create flow starts" doc:id="fd523522-b665-4cd9-a957-b688d4fa5fce" message="create flow starts" />
+		<ee:transform doc:name="Transform Message" doc:id="44f03dd4-35ed-425a-87b4-ff0c0bd892e8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map(item,index)->{
+	
+"ProductCode" : item.ProductCode,
+"Name" : item.Name,
+"ProductPrice__c" : item.ProductPrice,
+"CurrencyCode__c": item.CurrencyCode,
+"Description": item.Description,
+"productId__c" : item.ProductId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="${max.retry}" doc:name="Until Successful" doc:id="f7e42acd-2a7e-4b05-82e6-149a13512a81" millisBetweenRetries="${max.time}">
+			<salesforce:create type="Product2" doc:name="Create" doc:id="39a2ebd6-24c8-4bf3-ae53-cac9e323ecd2" config-ref="Salesforce_Config" />
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="adb424dd-c4d4-476c-9e8c-48b64233e5bd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Create flow ends" doc:id="276d3f07-a9e2-4d33-8372-341862c11ed6" message="Create flow ends"/>
+	</sub-flow>
+	<sub-flow name="health-check-Sub-Flow" doc:id="9b0651cd-341d-4bcc-a073-0de8e2f2196f" >
+		<logger level="INFO" doc:name="heathCheck flow starts" doc:id="41062bda-179c-4c7a-8929-910660d0720a" message="heathCheck flow starts"/>
+		<ee:transform doc:name="Transform Message" doc:id="db1e84fb-59d0-4b4d-bffd-a7e475870d46" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"InterfaceName": vars.interfaceName,
+	"success": "true",
+	"correlationId": vars.correlationId
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="heakthCheck flow ends" doc:id="16489c11-e296-4539-b12e-31fc4ea9ebf3" message="heakthCheck flow ends"/>
+	</sub-flow>
+</mule>

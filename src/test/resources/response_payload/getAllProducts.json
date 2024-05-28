@@ -1,0 +1,173 @@
+[
+    {
+        "ID": "01tdL000001N4X5QAK",
+        "Name": "Iphone 12",
+        "ProductId": "P00000000012",
+        "ProductCode": "SL9080",
+        "ProductPrice": "120000.0",
+        "CurrencyCode": "INR",
+        "Description": "Iphone 12"
+    },
+    {
+        "ID": "01tdL000001N4X6QAK",
+        "Name": "Dell Mouse",
+        "ProductId": "P00000000004",
+        "ProductCode": "GC3020",
+        "ProductPrice": "5000.0",
+        "CurrencyCode": "INR",
+        "Description": "Dell Mouse"
+    },
+    {
+        "ID": "01tdL000001N4X7QAK",
+        "Name": "HP KeyBoard",
+        "ProductId": "P00000000006",
+        "ProductCode": "GC3060",
+        "ProductPrice": "8000.0",
+        "CurrencyCode": "INR",
+        "Description": "HP Gaming KeyBoard"
+    },
+    {
+        "ID": "01tdL000001N4X8QAK",
+        "Name": "Samsung Mobile",
+        "ProductId": "P00000000017",
+        "ProductCode": "SL9020",
+        "ProductPrice": "40000.0",
+        "CurrencyCode": "CAD",
+        "Description": "Samsung Mobile 256 GB Internal 8 GB RAM"
+    },
+    {
+        "ID": "01tdL000001N4XAQA0",
+        "Name": "Power Bank",
+        "ProductId": "P00000000015",
+        "ProductCode": "IN7020",
+        "ProductPrice": "5000.0",
+        "CurrencyCode": "INR",
+        "Description": "Mobile Power Bank"
+    },
+    {
+        "ID": "01tdL000001N4XBQA0",
+        "Name": "Iphone 11",
+        "ProductId": "P00000000011",
+        "ProductCode": "SL9060",
+        "ProductPrice": "11000.0",
+        "CurrencyCode": "CNY",
+        "Description": "Iphone 11"
+    },
+    {
+        "ID": "01tdL000001N4XDQA0",
+        "Name": "HP Gaming Laptop",
+        "ProductId": "P00000000005",
+        "ProductCode": "IN7040",
+        "ProductPrice": "40000.0",
+        "CurrencyCode": "AUD",
+        "Description": "HP Gaming laptop"
+    },
+    {
+        "ID": "01tdL000001N4XFQA0",
+        "Name": "Battery",
+        "ProductId": "P00000000002",
+        "ProductCode": "IN7060",
+        "ProductPrice": "100000.0",
+        "CurrencyCode": "INR",
+        "Description": "Laptop Battery"
+    },
+    {
+        "ID": "01tdL000001NGUvQAO",
+        "Name": "Dell Laptop",
+        "ProductId": "P00000000003",
+        "ProductCode": "DELL0001",
+        "ProductPrice": "20000.0",
+        "CurrencyCode": "INR",
+        "Description": "Dell Laptop 5th Gen"
+    },
+    {
+        "ID": "01tdL000001NGebQAG",
+        "Name": "HP Laptop",
+        "ProductId": "P00000000001",
+        "ProductCode": "HP0008",
+        "ProductPrice": "10000.0",
+        "CurrencyCode": "GBP",
+        "Description": "HP Laptop 5th Gen"
+    },
+    {
+        "ID": "01tdL000001NKALQA4",
+        "Name": "HP Laptop",
+        "ProductId": "P00000000007",
+        "ProductCode": "HP0004",
+        "ProductPrice": "20000.0",
+        "CurrencyCode": "INR",
+        "Description": "HP Laptop 7th Gen"
+    },
+    {
+        "ID": "01tdL000001NKAMQA4",
+        "Name": "HP Laptop",
+        "ProductId": "P00000000008",
+        "ProductCode": "HP0005",
+        "ProductPrice": "10000.0",
+        "CurrencyCode": "INR",
+        "Description": "HP Laptop 5th Gen"
+    },
+    {
+        "ID": "01tdL000001OkE4QAK",
+        "Name": "HP Laptop",
+        "ProductId": "P00000000009",
+        "ProductCode": "HP0006",
+        "ProductPrice": "30000.0",
+        "CurrencyCode": "USD",
+        "Description": "HP Laptop 8th Gen"
+    },
+    {
+        "ID": "01tdL000001OkE5QAK",
+        "Name": "HP Laptop",
+        "ProductId": "P00000000010",
+        "ProductCode": "HP0007",
+        "ProductPrice": "20000.0",
+        "CurrencyCode": "INR",
+        "Description": "HP Laptop 9th Gen"
+    },
+    {
+        "ID": "01tdL000001OmlTQAS",
+        "Name": "HP Laptop",
+        "ProductId": "P00000000000",
+        "ProductCode": "HP0007",
+        "ProductPrice": "20000.0",
+        "CurrencyCode": "INR",
+        "Description": "HP Laptop 7th Gen"
+    },
+    {
+        "ID": "01tdL000001UyFtQAK",
+        "Name": "HardDisk",
+        "ProductId": null,
+        "ProductCode": "HP00078",
+        "ProductPrice": "20000.0",
+        "CurrencyCode": "INR",
+        "Description": "HardDisk 1 TB"
+    },
+    {
+        "ID": "01tdL000001UzFBQA0",
+        "Name": "Pendrive",
+        "ProductId": "P00000000023",
+        "ProductCode": "HP00678",
+        "ProductPrice": "10000.0",
+        "CurrencyCode": "INR",
+        "Description": "Pendrive 16 GB"
+    },
+    {
+        "ID": "01tdL000001UzFCQA0",
+        "Name": "Pendrive",
+        "ProductId": "P00000000024",
+        "ProductCode": "HP00778",
+        "ProductPrice": "15000.0",
+        "CurrencyCode": "EUR",
+        "Description": "Pendrive 32 GB"
+    },
+    {
+        "ID": "01tdL000001W49ZQAS",
+        "Name": "Iphone 15 pro max",
+        "ProductId": "P00000000014",
+        "ProductCode": "SC00678",
+        "ProductPrice": "230000.0",
+        "CurrencyCode": "INR",
+        "Description": "Iphone 15 pro max"
+    }
+]

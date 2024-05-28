@@ -1,0 +1,34 @@
+[
+{
+"ProductId" : "P00000000000",
+"ProductCode" : "HP0007",
+"Name" : "HP Laptop",
+"ProductPrice" : 200.00,
+"CurrencyCode": "INR",
+"Description": "HP Laptop 7th Gen"
+},
+{
+"ProductId" : "P00000000001",
+"ProductCode" : "HP0008",
+"Name" : "HP Laptop",
+"ProductPrice" : 100.00,
+"CurrencyCode": "USD",
+"Description": "HP Laptop 5th Gen"
+},
+{
+"ProductId" : "P00000000002",
+"ProductCode" : "HP0008",
+"Name" : "HP Laptop",
+"ProductPrice" : 100.00,
+"CurrencyCode": "USD",
+"Description": "HP Laptop 5th Gen"
+},
+{
+"ProductId" : "P00000000003",
+"ProductCode" : "HP0008",
+"Name" : "HP Laptop",
+"ProductPrice" : 100.00,
+"CurrencyCode": "USD",
+"Description": "HP Laptop 7th Gen"
+}
+]

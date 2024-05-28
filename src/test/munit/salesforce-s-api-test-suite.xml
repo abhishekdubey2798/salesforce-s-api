@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="salesforce-s-api-test-suite.xml" />
+	<munit:test name="salesforce-s-api-test-suite-salesforce-s-api-mainTest" doc:id="9510efc8-e173-489b-8283-561af49a46db" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mocking APIKIT Router" doc:id="b0c98302-83f8-429a-9d47-3e59c6699953" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to salesforce-s-api-main" doc:id="59ac886e-1480-4634-a640-4bf6a23e3171" name="salesforce-s-api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="7d6f38b7-8e6d-4e46-8163-3cc83fdfe7b9" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-get:\healthcheck:" doc:id="3861e10d-0485-4e76-8994-9d27c791aeba" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\healthcheck:salesforce-s-api-config" doc:id="d221103d-c8c9-48d4-87c7-9c5a523f4a02" name="get:\healthcheck:salesforce-s-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="922d2fe8-79f1-4cf6-891a-a314a03bba63" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-get:\getProducts:-PAGNIATION" doc:id="330e720d-bec7-48d8-8f04-4a58a2dcebe0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="51df0061-7f62-48ba-9349-21476e28325e" processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="salesforce-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[{queryParams: {&quot;page&quot;: '1',&quot;size&quot;: '10'}}]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mocking query for fetching paginated records" doc:id="c428548a-787e-464a-a846-aec39b0f8e6d" processor="salesforce:query" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Query for fetching selected records" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response_payload/getAllProducts.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="queryParams" doc:id="919d622e-11fb-436a-baf5-fb71435b36ad" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('request_payload/queryParams.json')]" encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="salesforce-s-api-main" doc:id="b9246315-e9e7-4459-ae84-8cb82d1bd8dd" name="salesforce-s-api-main"/>
+			<flow-ref doc:name="Flow-ref to get:\getProducts:salesforce-s-api-config" doc:id="eddbfd76-581a-4707-b106-bcf8915cfc5a" name="get:\getProducts:salesforce-s-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="8bbd0dec-97e7-48f3-a551-3aab6c28a577" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-get:\getProducts-ALL-RECORDS" doc:id="653e6bbc-2e5d-4a07-9057-aae83fcbe99c" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mocking query" doc:id="20989689-f57d-4b13-810f-4ed99917b52d" processor="salesforce:query" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Query for fetching all the records" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response_payload/getAllProducts.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\getProducts:salesforce-s-api-config" doc:id="2aa3dd2b-ef5c-4243-bd0d-e42e15302c04" name="get:\getProducts:salesforce-s-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="3dcdfac9-a252-4151-afdb-d31da87a316a" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-put:\updateProducts" doc:id="f434706a-7302-43e6-9f8d-122664a0e57d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mocking query" doc:id="bd5e79f3-4c6b-4d10-864a-355d11565f25" processor="salesforce:query">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Query" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mocking update operation" doc:id="5802379b-057d-4e9f-b059-f2df8ac71a36" processor="salesforce:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response_payload/updateProducts.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="7fa1fd08-7bce-42d2-a6df-e19b1cfa5995" >
+				<munit:payload value="#[MunitTools::getResourceAsString('request_payload/updateProducts.json')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[{queryParams: {&quot;productId&quot;: 'P00000000013'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to put:\updateProducts:application\json:salesforce-s-api-config" doc:id="fb6cb209-0eb2-4375-acbf-f969edae2b2e" name="put:\updateProducts:application\json:salesforce-s-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="bf729df7-b289-4ef4-bf19-874eadd68018" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-post:\createProducts" doc:id="7d8c95e7-3c3a-4740-96b6-891e45368957" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mocking create operation" doc:id="976af44a-5ee1-4a6e-be32-0def2bfef4ea" processor="salesforce:create">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response_payload/createProducts.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="30620447-368a-4e18-b89a-f57e5e8e5c41" >
+				<munit:payload value="#[MunitTools::getResourceAsString('request_payload/createProducts.json')]" encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\createProducts:application\json:salesforce-s-api-config" doc:id="cfba5dad-887a-4ed2-a0f9-f7fed336b0b0" name="post:\createProducts:application\json:salesforce-s-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="7615ce09-da9d-44b1-a85d-9dd65f281c0c" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-delete:\deleteProducts" doc:id="2b923d4a-7394-4686-9d86-015dc00e9385" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mocking query" doc:id="a1226a8e-0661-4244-b2d5-4c0ac1f75648" processor="salesforce:query">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Query" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mocking delete operation" doc:id="5ae9bf0e-aea8-4f62-bcb7-5c67cb6767ed" processor="salesforce:delete">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Delete" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response_payload/deleteProducts.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d3669d61-2ff6-4f62-aa3a-80b76b3b801c" >
+				<munit:payload value="#[MunitTools::getResourceAsString('request_payload/deleteProducts.json')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[{queryParams: {&quot;productId&quot;: 'P00000000013'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to delete:\deleteProducts:salesforce-s-api-config" doc:id="6934e29a-a923-4ee6-bd81-639dd90d2f30" name="delete:\deleteProducts:salesforce-s-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="6cb34f6a-3ec8-4e78-b10d-4d307112e918" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="salesforce-s-api-test-suite-salesforce-s-api-consoleTest" doc:id="51f3274e-692d-4538-bee5-2d05e42a5ac1" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mocking console" doc:id="8bb3d55f-4966-4817-bdc4-eacee6346156" processor="apikit:console" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('response_payload/deleteProducts.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to salesforce-s-api-console" doc:id="338c502d-c4bc-47e8-9791-05520f3704fb" name="salesforce-s-api-console"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Validating Payload" doc:id="1208e471-c7d7-46c1-a048-2d8447634b94" message="The payload does not match" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

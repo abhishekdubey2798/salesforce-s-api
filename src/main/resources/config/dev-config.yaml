@@ -1,0 +1,25 @@
+https:
+  host: "0.0.0.0"
+  port: "8082"
+  timeout: "30000"
+  ideal: "40000"
+
+keystore:
+  path: "keystore.jks"
+  password: "![4FLFuhL9EWuQ9rrkn5Cv2CJxhqPbjfCmOlnXpE3tIHg=]"
+  
+
+api:
+  id: "19535271"
+
+salesforce:
+  username: "![vpL9mbBA2RlftnNPVRdfk+Pr8e/KHeysZEIlWBqeB+A=]"
+  password: "![EmylO8hmsCKPf8lqJDvH6g==]"
+  token: "![B1Bj7QqRAEwwX/mseGhn86uXHkyQ52P6em10ed4Iw3Q=]"
+  url: "https://login.salesforce.com/services/Soap/u/56"
+  
+max:
+  retry: "3"
+  time: "10000"
+  
+   
